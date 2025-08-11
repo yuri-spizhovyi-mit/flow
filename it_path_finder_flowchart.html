@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IT Path Finder — Time & Money Flowchart (2025)</title>
+  <meta name="description" content="Choose your IT career path based on how much time and money you have right now. Mobile-friendly, offline-ready." />
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#101a33;
+      --text:#ffffff;
+      --muted:#c7d1ea;
+      --accent:#7dd3fc;
+      --good:#34d399;
+      --warn:#fbbf24;
+      --bad:#f87171;
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+    a{color:var(--accent)}
+    .wrap{max-width:760px;margin:0 auto;padding:18px 14px 80px}
+    header{display:flex;flex-direction:column;gap:10px;margin:8px 0 16px}
+    h1{font-size:clamp(24px,5vw,34px);line-height:1.1;margin:0}
+    p.lead{color:var(--muted);margin:0;font-size:clamp(14px,3.8vw,16px)}
+    .card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:0 10px 30px #00000033}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+    .group{display:flex;flex-direction:column;gap:12px}
+    .label{font-weight:600;font-size:15px}
+    .choices{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{
+      border:1px solid #2a3a69;
+      background:#0e1730;
+      color:#e7efff;
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:15px;
+      cursor:pointer;
+      transition:.15s transform ease,.2s background ease;
+      user-select:none;
+    }
+    .btn[aria-pressed="true"]{background:#143058;border-color:#3453a5;box-shadow:0 0 0 2px #1b3f7a inset}
+    .btn:active{transform:translateY(1px)}
+    .result{margin-top:14px;display:none;flex-direction:column;gap:10px}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.3px}
+    .badge.good{background:#0f2d25;color:var(--good);border:1px solid #1d6d57}
+    .badge.warn{background:#2b240d;color:var(--warn);border:1px solid #6b5612}
+    .badge.info{background:#0f2437;color:#7cc7ff;border:1px solid #1f4e79}
+    .steps{display:flex;flex-direction:column;gap:8px;margin:8px 0 4px}
+    .steps li{margin-left:18px}
+    .small{color:var(--muted);font-size:12px}
+    .toolbar{position:sticky;bottom:0;left:0;right:0;display:flex;gap:8px;justify-content:center;background:linear-gradient(180deg,transparent,rgba(11,18,32,.9) 30%);padding:14px}
+    .primary{
+      background:linear-gradient(180deg,#1e67ff,#124bd6);
+      border:none;
+      color:#fff;
+      padding:12px 16px;
+      border-radius:12px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 8px 20px #0b1f6a66;
+    }
+    .ghost{background:transparent;border:1px solid #365499;color:#d9e6ff;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:700;cursor:pointer}
+    .hidden{display:none !important}
+    .tiles{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:520px){.tiles{grid-template-columns:1fr 1fr}}
+    .tile{background:#0e1730;border:1px dashed #2a3a69;border-radius:12px;padding:10px}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+    footer{margin-top:18px;color:var(--muted);font-size:12px}
+    .hr{height:1px;background:#22315c;margin:12px 0}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Find your IT path — match your <em>time</em> and <em>money</em></h1>
+      <p class="lead">Answer two questions. Get a tailored starting plan with concrete next steps. Offline-friendly and mobile-first.</p>
+    </header>
+
+    <section class="card">
+      <div class="grid">
+        <div class="group" role="group" aria-label="How much time do you have right now?">
+          <div class="label">1) Time you can invest right now</div>
+          <div class="choices" id="time-choices">
+            <button class="btn" data-time="2-4y" aria-pressed="false">2–4 years</button>
+            <button class="btn" data-time="6-12m" aria-pressed="false">6–12 months</button>
+            <button class="btn" data-time="<3m" aria-pressed="false">&lt; 3 months</button>
+          </div>
+        </div>
+
+        <div class="group" role="group" aria-label="How much money can you put toward learning?">
+          <div class="label">2) Money you can put toward learning</div>
+          <div class="choices" id="money-choices">
+            <button class="btn" data-money="none" aria-pressed="false">None</button>
+            <button class="btn" data-money="some" aria-pressed="false">Some ($500–$3k)</button>
+            <button class="btn" data-money="more" aria-pressed="false">More ($3k+ or aid)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="result" id="result">
+        <div id="path-badges"></div>
+        <h2 id="path-title" style="margin:6px 0 0"></h2>
+        <p id="path-desc" style="margin:4px 0 0;color:#cfe1ff"></p>
+
+        <div class="hr"></div>
+
+        <div class="tiles">
+          <div class="tile">
+            <strong>Next 2 weeks</strong>
+            <ul class="steps" id="steps-2w"></ul>
+          </div>
+          <div class="tile">
+            <strong>Next 2–3 months</strong>
+            <ul class="steps" id="steps-3m"></ul>
+          </div>
+        </div>
+
+        <button id="copy-plan" class="ghost" style="margin-top:10px">Copy this plan</button>
+        <p class="small">Note: probability-informed guidance, not a guarantee. Always verify costs, outcomes, and eligibility.</p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="hr"></div>
+      <p>Built for Milestone 4: Communicating Results (2025). Works offline. No tracking.</p>
+      <p class="small">Tip: add this page to your Instagram <em>link in bio</em> or host via GitHub Pages / Netlify / Google Sites.</p>
+    </footer>
+  </div>
+
+  <div class="toolbar">
+    <button class="primary" id="see-plan" disabled>See my plan</button>
+    <button class="ghost hidden" id="reset">Reset</button>
+  </div>
+
+<script>
+(function(){
+  const state = { time: null, money: null };
+
+  function select(group, value){
+    const buttons = document.querySelectorAll(group+' .btn');
+    buttons.forEach(b => {
+      const isActive = (b.dataset.time === value) || (b.dataset.money === value);
+      b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+  }
+
+  function updateCTA(){
+    const btn = document.getElementById('see-plan');
+    btn.disabled = !(state.time && state.money);
+  }
+
+  document.getElementById('time-choices').addEventListener('click', (e)=>{
+    if(e.target.classList.contains('btn')){
+      state.time = e.target.dataset.time;
+      select('#time-choices', state.time);
+      updateCTA();
+    }
+  });
+  document.getElementById('money-choices').addEventListener('click', (e)=>{
+    if(e.target.classList.contains('btn')){
+      state.money = e.target.dataset.money;
+      select('#money-choices', state.money);
+      updateCTA();
+    }
+  });
+
+  const PLAN_MAP = {
+    '2-4y:none': {
+      title: 'Traditional path via Community College (low-cost)',
+      desc: 'Earn a 2-year associate degree or transfer pathway with financial aid; stack an industry cert. Highest employer recognition over time.',
+      badges: ['good:Long runway', 'info:Financial aid'],
+      steps2w: [
+        'Meet with an advisor at a local community college; ask about transfer pathways and ESL support.',
+        'Complete FAFSA/aid exploration; list tuition + book costs; identify fee waivers.',
+        'Pick 1 industry cert target (e.g., AWS Cloud Practitioner) and a study schedule.'
+      ],
+      steps3m: [
+        'Enroll in 2–3 core CS/IT courses; join tutoring/peer groups.',
+        'Start a tiny GitHub portfolio (2 projects) and a LinkedIn profile.',
+        'Attend 1–2 employer/ESL career center events; collect contacts.'
+      ]
+    },
+    '2-4y:some': {
+      title: 'University / Community College transfer + early internships',
+      desc: 'Mix degree progress with early internships; use funds for books, fees, and cert exams.',
+      badges: ['good:Strong signal', 'info:Internships'],
+      steps2w: [
+        'Plan degree map + transfer options; book internship advising.',
+        'Register for campus career portal; draft a 1-page resume.',
+        'Choose a cert (e.g., CompTIA A+, Google IT Support) and book the exam window.'
+      ],
+      steps3m: [
+        'Apply to 5 on-campus/nearby IT roles (helpdesk, lab assistant).',
+        'Finish 2–3 portfolio artifacts tied to coursework.',
+        'Attend 2 meetups or hackathons; practice introductions.'
+      ]
+    },
+    '2-4y:more': {
+      title: 'University track with co-op / paid internships',
+      desc: 'Invest in a recognized CS/IT degree plus co-op; combine with targeted certs for faster hiring.',
+      badges: ['good:Top employer signal', 'info:Co-op'],
+      steps2w: [
+        'Shortlist programs with co-op; compare outcomes and costs.',
+        'Contact admissions + financial aid; confirm scholarships.',
+        'Map a cert track (e.g., Azure AZ-900) alongside the first term.'
+      ],
+      steps3m: [
+        'Secure a co-op placement timeline; start networking with alumni.',
+        'Ship 2–3 public projects relevant to target roles.',
+        'Practice interviews (behavioral + simple technical) weekly.'
+      ]
+    },
+    '6-12m:none': {
+      title: 'Apprenticeships, WIOA-funded training, nonprofit programs',
+      desc: 'Short, subsidized training with job placement support; ideal when paying out-of-pocket is not possible.',
+      badges: ['warn:Seats limited', 'info:Placement help'],
+      steps2w: [
+        'Visit an American Job Center; ask about WIOA vouchers and IT programs.',
+        'Identify 2 nonprofits with proven job outcomes; join waitlists.',
+        'Start a free study plan (Python/IT support) and a simple project repo.'
+      ],
+      steps3m: [
+        'Complete subsidized coursework; get resume reviews from program staff.',
+        'Apply to 10 apprenticeship/helpdesk roles; track responses.',
+        'Add a small capstone (ticketing system, portfolio site) to showcase skills.'
+      ]
+    },
+    '6-12m:some': {
+      title: 'Low-cost bootcamp + cert + part-time work',
+      desc: 'Blend affordable bootcamp or community college certificate with an entry cert and part-time income.',
+      badges: ['info:Balanced plan'],
+      steps2w: [
+        'Compare 3 programs on outcomes (placement rate, employer partners, salary).',
+        'Block a weekly schedule (learning + work); commit to office hours.',
+        'Book a cert date (Google IT Support / AWS CC) as a milestone.'
+      ],
+      steps3m: [
+        'Finish a real-world portfolio (2–3 projects).',
+        'Request 3 informational interviews from alumni.',
+        'Apply to 15 roles; iterate resume based on feedback.'
+      ]
+    },
+    '6-12m:more': {
+      title: 'Reputable bootcamp with employer network',
+      desc: 'Pay for outcomes-backed bootcamps with formal employer pipelines; compress time-to-first-job.',
+      badges: ['good:Fast track', 'warn:Verify outcomes'],
+      steps2w: [
+        'Verify audited outcomes; speak to 2 alumni; confirm career support.',
+        'Baseline assessment; fill gaps before start date.',
+        'Draft LinkedIn + personal site; plan weekly deliverables.'
+      ],
+      steps3m: [
+        'Complete capstone tied to target role.',
+        'Do 2 mock interviews per week (DS/Algo or Helpdesk scenarios).',
+        'Apply broadly; leverage bootcamp partner referrals.'
+      ]
+    },
+    '<3m:none': {
+      title: 'Free online learning + public resources',
+      desc: 'Start immediately with free courses, libraries, and job centers; build tiny but real projects.',
+      badges: ['warn:Short runway', 'info:Portfolio first'],
+      steps2w: [
+        'Pick one path (Helpdesk, Web, Data) and one free course; avoid multitasking.',
+        'Create a GitHub repo; push daily progress notes.',
+        'Book a resume review at a job center or library.'
+      ],
+      steps3m: [
+        'Ship 3 tiny projects; write short READMEs.',
+        'Take an entry-level cert exam if feasible.',
+        'Apply to 10–20 entry roles; track and iterate.'
+      ]
+    },
+    '<3m:some': {
+      title: 'Short certificate + portfolio sprint',
+      desc: 'Invest small funds in a short cert and focus on portfolio demos to pass initial screens.',
+      badges: ['info:Quick signal'],
+      steps2w: [
+        'Enroll in a short cert (e.g., AZ-900, Google IT).',
+        'Choose 2 portfolio ideas aligned with target role.',
+        'Set a weekly deliverable and demo day with a peer.'
+      ],
+      steps3m: [
+        'Finish cert; add badge to LinkedIn.',
+        'Record 60–90 sec walkthrough videos of projects.',
+        'Apply to 15 roles; request referrals from classmates.'
+      ]
+    },
+    '<3m:more': {
+      title: 'Intro bootcamp / certificate crash + career coaching',
+      desc: 'Use funds for an intensive foundations program plus structured coaching and interview prep.',
+      badges: ['good:Focused sprint', 'warn:Intense workload'],
+      steps2w: [
+        'Baseline skills assessment; fill gaps with pre-work.',
+        'Schedule weekly mock interviews + code labs.',
+        'Draft a referral list (alumni, mentors, meetup contacts).'
+      ],
+      steps3m: [
+        'Complete 1–2 showcase projects tied to job postings.',
+        'Iterate resume + LinkedIn weekly with coach feedback.',
+        'Target 15–25 applications; prioritize roles with apprenticeships.'
+      ]
+    }
+  };
+
+  function renderPlan(){
+    const key = state.time + ':' + state.money;
+    const plan = PLAN_MAP[key];
+    if(!plan) return;
+
+    // Title & desc
+    document.getElementById('path-title').textContent = plan.title;
+    document.getElementById('path-desc').textContent = plan.desc;
+
+    // Badges
+    const badgeWrap = document.getElementById('path-badges');
+    badgeWrap.innerHTML = '';
+    (plan.badges || []).forEach(b=>{
+      const [kind,label] = b.split(':');
+      const span = document.createElement('span');
+      span.className = 'badge ' + (kind==='good'?'good':kind==='warn'?'warn':'info');
+      span.textContent = label;
+      badgeWrap.appendChild(span);
+      badgeWrap.appendChild(document.createTextNode(' '));
+    });
+
+    // Steps
+    const s2w = document.getElementById('steps-2w');
+    const s3m = document.getElementById('steps-3m');
+    s2w.innerHTML = '';
+    s3m.innerHTML = '';
+    (plan.steps2w || []).forEach(step=>{
+      const li = document.createElement('li'); li.textContent = step; s2w.appendChild(li);
+    });
+    (plan.steps3m || []).forEach(step=>{
+      const li = document.createElement('li'); li.textContent = step; s3m.appendChild(li);
+    });
+
+    // Show result
+    document.getElementById('result').style.display = 'flex';
+    document.getElementById('reset').classList.remove('hidden');
+    document.getElementById('see-plan').textContent = 'Update my plan';
+  }
+
+  document.getElementById('see-plan').addEventListener('click', renderPlan);
+  document.getElementById('reset').addEventListener('click', ()=>{
+    state.time = null; state.money = null;
+    ['#time-choices','#money-choices'].forEach(sel => {
+      document.querySelectorAll(sel+' .btn').forEach(b=>b.setAttribute('aria-pressed','false'));
+    });
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('reset').classList.add('hidden');
+    const btn = document.getElementById('see-plan');
+    btn.textContent = 'See my plan'; btn.disabled = true;
+  });
+
+  // Copy plan to clipboard
+  document.getElementById('copy-plan').addEventListener('click', ()=>{
+    const title = document.getElementById('path-title').textContent;
+    const desc = document.getElementById('path-desc').textContent;
+    const s2 = Array.from(document.querySelectorAll('#steps-2w li')).map(li=>'- '+li.textContent).join('\n');
+    const s3 = Array.from(document.querySelectorAll('#steps-3m li')).map(li=>'- '+li.textContent).join('\n');
+    const text = `${title}\n${desc}\n\nNext 2 weeks:\n${s2}\n\nNext 2–3 months:\n${s3}\n\nNote: probability-informed guidance, not a guarantee.`;
+    navigator.clipboard.writeText(text).then(()=>{
+      alert('Plan copied to clipboard. Paste it into notes or WhatsApp.');
+    });
+  });
+})();
+</script>
+</body>
+</html>
